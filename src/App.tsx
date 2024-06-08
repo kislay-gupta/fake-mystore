@@ -1,9 +1,10 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import Navbar from "./components/ui/home/Navbar";
+import Navbar from "./components/home/Navbar";
 import ProductPage from "./pages/ProductPage";
 import { Toaster } from "@/components/ui/sonner";
+import Category from "./pages/Category";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/category/:id" element={<Category />} />
       </Routes>
     </BrowserRouter>
   );

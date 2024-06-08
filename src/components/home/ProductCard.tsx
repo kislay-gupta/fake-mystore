@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { ProductProps } from "@/constant";
-import { Button } from "../button";
+import { Button } from "../ui/button";
 import { LucideShoppingCart, Star } from "lucide-react";
 
 export const ProductCard = ({
@@ -19,22 +19,33 @@ export const ProductCard = ({
   price,
   rating,
   title,
+  category,
 }: ProductProps) => {
   return (
-    <Card className="w-80">
+    <Card className="w-80 hover:scale-105 transition hover:shadow-lg">
       <Link to={`/product/${id}`} className="">
         <CardHeader>
           <img
             src={image}
             className="h-24 w-full object-contain transition duration-500 group-hover:scale-105 sm:h-48"
           />
+
+          <Link
+            className="capitalize text-blue-500 hover:text-blue-800"
+            to={`/category/${category}`}
+          >
+            {category}
+          </Link>
           <CardTitle className="truncate">{title}</CardTitle>
           <CardDescription className="line-clamp-2">
             {description}
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-amber-500  flex">
-          <Star className="size-4 fill-amber-500 my-auto" /> {rating.rate}
+        <CardContent className="  flex justify-between">
+          <span className="flex">
+            <Star className="size-4 text-amber-500 fill-amber-500 my-auto" />{" "}
+            {rating.rate}
+          </span>
         </CardContent>
       </Link>
       <CardFooter className="flex    justify-between">

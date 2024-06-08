@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { ProductCard } from "@/components/home/ProductCard";
-import { ProductProps, url } from "@/constant";
 import ProductCardSkeleton from "@/components/Loaders/ProductCardSkeleton";
-const Home = () => {
-  const [productData, setProductData] = useState<ProductProps[]>([]);
+import { ProductProps, url } from "@/constant";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router";
+
+const Category = () => {
   const [isLoading, setLoading] = useState(false);
-  const getProductData = () => {
+  const [categoryDetail, setCategoryDetail] = useState<ProductProps[]>();
+  const { id } = useParams();
+  const getCategoryDetail = () => {
     setLoading(true);
     axios
-      .get(url)
+      .get(`${url}/category/${id}`)
       .then((response) => {
-        setProductData(response.data);
+        setCategoryDetail(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -21,21 +24,21 @@ const Home = () => {
       });
   };
   useEffect(() => {
-    getProductData();
+    getCategoryDetail();
   }, []);
-  console.log(productData);
+  console.log(categoryDetail);
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2 mx-4 gap-y-4">
       {isLoading &&
         [0, 0, 0, 0, 0, 0, 0, 0].map((data) => {
           return <ProductCardSkeleton key={data} />;
         })}
-      {productData &&
-        productData.map((data, index) => {
+      {categoryDetail &&
+        categoryDetail.map((data, index) => {
           return <ProductCard key={index} {...data} />;
         })}
     </div>
   );
 };
 
-export default Home;
+export default Category;

@@ -5,6 +5,7 @@ import axios from "axios";
 import { Heart } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 const ProductPage = () => {
@@ -75,6 +76,12 @@ const ProductPage = () => {
                 >
                   {productDetail.title}
                 </h1>
+                <Link
+                  className="text-blue-500"
+                  to={`/category/${productDetail.category}`}
+                >
+                  {productDetail.category}
+                </Link>
                 <div className="flex mb-4">
                   <span className="flex items-center">
                     <svg
