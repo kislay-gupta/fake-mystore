@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSearchParams } from "react-router-dom";
+import useSearch from "@/hooks/useSearch";
 import EmptySearch from "@/components/EmptySearch";
 
 const Home = () => {
@@ -46,16 +47,7 @@ const Home = () => {
     getProductData();
   }, [pageLimit, searchQuery]);
 
-  const searchFunction = ({ title, description, category }: ProductProps) => {
-    if (!searchQuery) return true;
-    const searchTerm = searchQuery.toLowerCase();
-    let found = title.toLowerCase().includes(searchTerm);
-    found = found || category.toLowerCase().includes(searchTerm);
-    found = found || description.toLowerCase().includes(searchTerm);
-    return found;
-  };
-
-  const filteredProducts = productData.filter(searchFunction);
+  const filteredProducts = useSearch(productData, searchQuery); // Use the custom hook
   const noResults = !isLoading && filteredProducts.length === 0;
 
   console.log(productData);
@@ -71,7 +63,7 @@ const Home = () => {
         ))}
       {noResults && (
         <div className="col-span-full text-center py-8">
-          <EmptySearch />
+          <EmptySearch />.
         </div>
       )}
       {!isLoading && hasMore && (
