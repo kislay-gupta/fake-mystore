@@ -6,16 +6,27 @@ import ProductCardSkeleton from "@/components/Loaders/ProductCardSkeleton";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useSearchParams } from "react-router-dom";
+import EmptySearch from "@/components/EmptySearch";
+
 const Home = () => {
   const [productData, setProductData] = useState<ProductProps[]>([]);
+  const [searchParams] = useSearchParams();
+
   const [pageLimit, setPageLimit] = useState(8);
   const [isLoading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const searchQuery = searchParams.get("search") || "";
+
   const handleInfiniteScroll = () => {
-    if (pageLimit > 21) {
-      toast.error("No more product to scroll");
+    if (pageLimit >= 21) {
+      toast.error("No more products to scroll");
+      setHasMore(false);
+      return;
     }
-    setPageLimit(pageLimit + 8);
+    setPageLimit((prevLimit) => prevLimit + 8);
   };
+
   const getProductData = () => {
     setLoading(true);
     axios
@@ -30,33 +41,52 @@ const Home = () => {
         setLoading(false);
       });
   };
+
   useEffect(() => {
     getProductData();
-  }, [pageLimit]);
+  }, [pageLimit, searchQuery]);
+
+  const searchFunction = ({ title, description, category }: ProductProps) => {
+    if (!searchQuery) return true;
+    const searchTerm = searchQuery.toLowerCase();
+    let found = title.toLowerCase().includes(searchTerm);
+    found = found || category.toLowerCase().includes(searchTerm);
+    found = found || description.toLowerCase().includes(searchTerm);
+    return found;
+  };
+
+  const filteredProducts = productData.filter(searchFunction);
+  const noResults = !isLoading && filteredProducts.length === 0;
+
   console.log(productData);
+
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2 mx-4 gap-y-4">
-      {productData &&
-        productData?.map((data, index) => {
-          return <ProductCard key={index} {...data} />;
-        })}
-      {!isLoading && (
+      {filteredProducts.map((data, index) => (
+        <ProductCard key={index} {...data} />
+      ))}
+      {isLoading &&
+        Array.from({ length: 8 }).map((_, index) => (
+          <ProductCardSkeleton key={index} />
+        ))}
+      {noResults && (
+        <div className="col-span-full text-center py-8">
+          <EmptySearch />
+        </div>
+      )}
+      {!isLoading && hasMore && (
         <div className="col-span-full flex justify-center">
-          <Button disabled={isLoading} onClick={handleInfiniteScroll}>
+          <Button onClick={handleInfiniteScroll}>
             {isLoading ? (
               <>
-                <Loader2 className="animate-spin mr-2 size-4" /> loading
+                <Loader2 className="animate-spin mr-2 size-4" /> Loading
               </>
             ) : (
-              <>LoadMore</>
+              <>Load More</>
             )}
           </Button>
         </div>
       )}
-      {isLoading &&
-        [0, 0, 0, 0, 0, 0, 0, 0].map((data) => {
-          return <ProductCardSkeleton key={data} />;
-        })}
     </div>
   );
 };

@@ -1,12 +1,14 @@
 import { menuLink } from "@/constant";
 import { Search, ShoppingBag } from "lucide-react";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 
 const Navbar = () => {
+  const [, setSearchParams] = useSearchParams();
+
   return (
     <nav className="sticky top-0 z-50  bg-white/30 dark:bg-black/30  backdrop-blur-lg ">
       <div className="mx-4 my-auto  flex px-4">
@@ -40,6 +42,7 @@ const Navbar = () => {
                 <Input
                   placeholder="Search product"
                   className="w-full max-w-[512px] pl-9"
+                  onChange={(e) => setSearchParams({ search: e.target.value })}
                 />
               </div>
               <div>
