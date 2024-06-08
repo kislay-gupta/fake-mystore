@@ -9,7 +9,8 @@ import { toast } from "sonner";
 import { useSearchParams } from "react-router-dom";
 import useSearch from "@/hooks/useSearch";
 import EmptySearch from "@/components/EmptySearch";
-import ProductFilter from "@/components/ProductFilter";
+import { sortProducts } from "@/lib/utils";
+import SortDropdown from "@/components/SortDropdown";
 
 const Home = () => {
   const [productData, setProductData] = useState<ProductProps[]>([]);
@@ -19,6 +20,7 @@ const Home = () => {
   const [isLoading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const searchQuery = searchParams.get("search") || "";
+  const [sortCriteria, setSortCriteria] = useState("");
 
   const handleInfiniteScroll = () => {
     if (pageLimit >= 21) {
@@ -44,41 +46,30 @@ const Home = () => {
       });
   };
 
+  const handleSortChange = (criteria: string) => {
+    setSortCriteria(criteria);
+    const sortedProducts = sortProducts(productData, criteria);
+    setProductData(sortedProducts);
+  };
+
   useEffect(() => {
     getProductData();
   }, [pageLimit, searchQuery]);
 
   const filteredProducts = useSearch(productData, searchQuery); // Use the custom hook
   const noResults = !isLoading && filteredProducts.length === 0;
-  const updateRating = (e: string) => {
-    if (e === "lowToHighPrice") {
-      const sortedProducts = [...productData].sort((a, b) => a.price - b.price);
-      setProductData(sortedProducts);
-    } else if (e === "highToLowPrice") {
-      const sortedProducts = [...productData].sort((a, b) => b.price - a.price);
-      setProductData(sortedProducts);
-    } else if (e === "lowToHigh") {
-      const sortedProducts = [...productData].sort(
-        (a, b) => a.rating.rate - b.rating.rate
-      );
-      setProductData(sortedProducts);
-    } else if (e === "highToLow") {
-      const sortedProducts = [...productData].sort(
-        (a, b) => b.rating.rate - a.rating.rate
-      );
-      setProductData(sortedProducts);
-    } else {
-      setProductData([]);
-      getProductData();
-    }
-  };
+
   console.log(productData);
 
   return (
-    <section className="mx-4">
-      <div className="flex justify-end m-4 ">
-        <ProductFilter updateRating={updateRating} />
+    <div className="m-4">
+      <div className="flex mb-4 justify-end">
+        <SortDropdown
+          sortCriteria={sortCriteria}
+          handleSortChange={handleSortChange}
+        />
       </div>
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2  gap-y-4">
         {filteredProducts.map((data, index) => (
           <ProductCard key={index} {...data} />
@@ -106,7 +97,7 @@ const Home = () => {
           </div>
         )}
       </div>
-    </section>
+    </div>
   );
 };
 

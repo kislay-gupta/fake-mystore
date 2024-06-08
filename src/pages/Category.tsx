@@ -8,6 +8,8 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useParams, useSearchParams } from "react-router-dom";
 import useSearch from "@/hooks/useSearch"; // Import the custom hook
+import { sortProducts } from "@/lib/utils";
+import SortDropdown from "@/components/SortDropdown"; // Import the SortDropdown component
 
 const Category = () => {
   const [productData, setProductData] = useState<ProductProps[]>([]);
@@ -15,8 +17,9 @@ const Category = () => {
   const [isLoading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const { id } = useParams();
-  const [searchParams] = useSearchParams();
-  const searchQuery = searchParams.get("search") || "";
+  const [searchParams] = useSearchParams(); // Use useSearchParams to get the search query
+  const searchQuery = searchParams.get("search") || ""; // Get the search query from the URL
+  const [sortCriteria, setSortCriteria] = useState("");
 
   const handleInfiniteScroll = () => {
     if (pageLimit >= 21) {
@@ -42,39 +45,54 @@ const Category = () => {
       });
   };
 
+  const handleSortChange = (criteria: string) => {
+    setSortCriteria(criteria);
+    const sortedProducts = sortProducts(productData, criteria);
+    setProductData(sortedProducts);
+  };
+
   useEffect(() => {
     getCategoryDetail();
   }, [pageLimit, id]);
 
-  // Apply the search hook with the search query
   const filteredProducts = useSearch(productData, searchQuery);
   const noResults = !isLoading && filteredProducts.length === 0;
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2 mx-4 gap-y-4">
-      {filteredProducts.map((data, index) => (
-        <ProductCard key={index} {...data} />
-      ))}
-      {isLoading &&
-        Array.from({ length: 8 }).map((_, index) => (
-          <ProductCardSkeleton key={index} />
+    <div className="m-4">
+      <div className="flex justify-end mb-4">
+        <SortDropdown
+          sortCriteria={sortCriteria}
+          handleSortChange={handleSortChange}
+        />
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2  gap-y-4">
+        {filteredProducts.map((data, index) => (
+          <ProductCard key={index} {...data} />
         ))}
-      {noResults && (
-        <div className="col-span-full text-center py-8">No products found.</div>
-      )}
-      {!isLoading && hasMore && (
-        <div className="col-span-full flex justify-center">
-          <Button onClick={handleInfiniteScroll}>
-            {isLoading ? (
-              <>
-                <Loader2 className="animate-spin mr-2 size-4" /> Loading
-              </>
-            ) : (
-              <>Load More</>
-            )}
-          </Button>
-        </div>
-      )}
+        {isLoading &&
+          Array.from({ length: 8 }).map((_, index) => (
+            <ProductCardSkeleton key={index} />
+          ))}
+        {noResults && (
+          <div className="col-span-full text-center py-8">
+            No products found.
+          </div>
+        )}
+        {!isLoading && hasMore && (
+          <div className="col-span-full flex justify-center">
+            <Button onClick={handleInfiniteScroll}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin mr-2 size-4" /> Loading
+                </>
+              ) : (
+                <>Load More</>
+              )}
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
