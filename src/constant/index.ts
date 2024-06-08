@@ -10,3 +10,5 @@ export interface ProductProps {
     count: number;
   };
 }
+
+export const url = "https://fakestoreapi.com/products";

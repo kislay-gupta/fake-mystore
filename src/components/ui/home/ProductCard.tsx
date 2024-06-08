@@ -10,7 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import { ProductProps } from "@/constant";
 import { Button } from "../button";
-import { Star } from "lucide-react";
+import { LucideShoppingCart, Star } from "lucide-react";
 
 export const ProductCard = ({
   id,
@@ -22,26 +22,28 @@ export const ProductCard = ({
 }: ProductProps) => {
   return (
     <Card className="w-80">
-      <Link to={`/${id}`} className="hover:">
+      <Link to={`/product/${id}`} className="">
         <CardHeader>
           <img
             src={image}
             className="h-24 w-full object-contain transition duration-500 group-hover:scale-105 sm:h-48"
           />
           <CardTitle className="truncate">{title}</CardTitle>
-          <CardDescription className="line-clamp-1">
+          <CardDescription className="line-clamp-2">
             {description}
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-green-500 flex">
-          <Star className="size-4 fill-green-500 my-auto" /> {rating.rate}
+        <CardContent className="text-amber-500  flex">
+          <Star className="size-4 fill-amber-500 my-auto" /> {rating.rate}
         </CardContent>
       </Link>
-      <CardFooter className="flex justify-between">
+      <CardFooter className="flex    justify-between">
         <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
           ${price}
         </h3>
-        <Button>Add to card</Button>
+        <Button className="">
+          <LucideShoppingCart className="mr-2" /> Add to card
+        </Button>
       </CardFooter>
     </Card>
   );
