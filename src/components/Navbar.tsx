@@ -1,10 +1,20 @@
 import { menuLink } from "@/constant";
-import { Search, ShoppingBag } from "lucide-react";
+import { Search, ShoppingCartIcon } from "lucide-react";
 import React from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const Navbar = () => {
   const [, setSearchParams] = useSearchParams();
@@ -56,9 +66,44 @@ const Navbar = () => {
                 <Button>Log In</Button>
               </div>
               <div>
-                <Button size="icon">
-                  <ShoppingBag />
-                </Button>
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button>
+                      <ShoppingCartIcon />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent>
+                    <SheetHeader>
+                      <SheetTitle>Edit profile</SheetTitle>
+                      <SheetDescription>
+                        Make changes to your profile here. Click save when
+                        you're done.
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        =
+                        <Input
+                          id="name"
+                          value="Pedro Duarte"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Input
+                          id="username"
+                          value="@peduarte"
+                          className="col-span-3"
+                        />
+                      </div>
+                    </div>
+                    <SheetFooter>
+                      <SheetClose asChild>
+                        <Button type="submit">Save changes</Button>
+                      </SheetClose>
+                    </SheetFooter>
+                  </SheetContent>
+                </Sheet>
               </div>
             </div>
           </div>

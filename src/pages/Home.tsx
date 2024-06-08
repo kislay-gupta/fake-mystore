@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useSearchParams } from "react-router-dom";
 import useSearch from "@/hooks/useSearch";
 import EmptySearch from "@/components/EmptySearch";
+import ProductFilter from "@/components/ProductFilter";
 
 const Home = () => {
   const [productData, setProductData] = useState<ProductProps[]>([]);
@@ -49,37 +50,63 @@ const Home = () => {
 
   const filteredProducts = useSearch(productData, searchQuery); // Use the custom hook
   const noResults = !isLoading && filteredProducts.length === 0;
-
+  const updateRating = (e: string) => {
+    if (e === "lowToHighPrice") {
+      const sortedProducts = [...productData].sort((a, b) => a.price - b.price);
+      setProductData(sortedProducts);
+    } else if (e === "highToLowPrice") {
+      const sortedProducts = [...productData].sort((a, b) => b.price - a.price);
+      setProductData(sortedProducts);
+    } else if (e === "lowToHigh") {
+      const sortedProducts = [...productData].sort(
+        (a, b) => a.rating.rate - b.rating.rate
+      );
+      setProductData(sortedProducts);
+    } else if (e === "highToLow") {
+      const sortedProducts = [...productData].sort(
+        (a, b) => b.rating.rate - a.rating.rate
+      );
+      setProductData(sortedProducts);
+    } else {
+      setProductData([]);
+      getProductData();
+    }
+  };
   console.log(productData);
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2 mx-4 gap-y-4">
-      {filteredProducts.map((data, index) => (
-        <ProductCard key={index} {...data} />
-      ))}
-      {isLoading &&
-        Array.from({ length: 8 }).map((_, index) => (
-          <ProductCardSkeleton key={index} />
+    <section className="mx-4">
+      <div className="flex justify-end m-4 ">
+        <ProductFilter updateRating={updateRating} />
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2  gap-y-4">
+        {filteredProducts.map((data, index) => (
+          <ProductCard key={index} {...data} />
         ))}
-      {noResults && (
-        <div className="col-span-full text-center py-8">
-          <EmptySearch />.
-        </div>
-      )}
-      {!isLoading && hasMore && (
-        <div className="col-span-full flex justify-center">
-          <Button onClick={handleInfiniteScroll}>
-            {isLoading ? (
-              <>
-                <Loader2 className="animate-spin mr-2 size-4" /> Loading
-              </>
-            ) : (
-              <>Load More</>
-            )}
-          </Button>
-        </div>
-      )}
-    </div>
+        {isLoading &&
+          Array.from({ length: 8 }).map((_, index) => (
+            <ProductCardSkeleton key={index} />
+          ))}
+        {noResults && (
+          <div className="col-span-full text-center py-8">
+            <EmptySearch />.
+          </div>
+        )}
+        {!isLoading && hasMore && (
+          <div className="col-span-full flex justify-center">
+            <Button onClick={handleInfiniteScroll}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin mr-2 size-4" /> Loading
+                </>
+              ) : (
+                <>Load More</>
+              )}
+            </Button>
+          </div>
+        )}
+      </div>
+    </section>
   );
 };
 
