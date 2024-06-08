@@ -4,10 +4,18 @@ import { ProductCard } from "@/components/home/ProductCard";
 import { ProductProps, url } from "@/constant";
 import ProductCardSkeleton from "@/components/Loaders/ProductCardSkeleton";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 const Home = () => {
   const [productData, setProductData] = useState<ProductProps[]>([]);
   const [pageLimit, setPageLimit] = useState(8);
   const [isLoading, setLoading] = useState(false);
+  const handleInfiniteScroll = () => {
+    if (pageLimit > 21) {
+      toast.error("No more product to scroll");
+    }
+    setPageLimit(pageLimit + 8);
+  };
   const getProductData = () => {
     setLoading(true);
     axios
@@ -34,12 +42,14 @@ const Home = () => {
         })}
       {!isLoading && (
         <div className="col-span-full flex justify-center">
-          <Button
-            onClick={() => {
-              setPageLimit(pageLimit + 8);
-            }}
-          >
-            LoadMore
+          <Button disabled={isLoading} onClick={handleInfiniteScroll}>
+            {isLoading ? (
+              <>
+                <Loader2 className="animate-spin mr-2 size-4" /> loading
+              </>
+            ) : (
+              <>LoadMore</>
+            )}
           </Button>
         </div>
       )}

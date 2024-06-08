@@ -1,7 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import Navbar from "./components/home/Navbar";
+import Navbar from "./components/Navbar";
 import ProductPage from "./pages/ProductPage";
 import { Toaster } from "@/components/ui/sonner";
 import Category from "./pages/Category";
