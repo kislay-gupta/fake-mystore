@@ -63,14 +63,14 @@ const Home = () => {
 
   return (
     <div className="m-4">
-      <div className="flex mb-4 justify-end">
+      <div className="flex mb-4 lg:justify-end">
         <SortDropdown
           sortCriteria={sortCriteria}
           handleSortChange={handleSortChange}
         />
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2  gap-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-x-2  gap-y-4">
         {filteredProducts.map((data, index) => (
           <ProductCard key={index} {...data} />
         ))}

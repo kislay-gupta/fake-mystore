@@ -22,7 +22,7 @@ const Navbar: React.FC = () => {
   const { cart, handleQuantityChange, removeFromCart, clearCart } = useCart();
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/30 dark:bg-black/30 backdrop-blur-lg">
+    <nav className="hidden lg:block sticky top-0 z-50 bg-white/30 dark:bg-black/30 backdrop-blur-lg">
       <div className="mx-4 my-auto flex px-4">
         <div className="grid h-24 w-full grid-cols-12 items-center">
           <div className="col-span-6 lg:col-span-2">

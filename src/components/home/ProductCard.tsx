@@ -58,7 +58,7 @@ export const ProductCard: React.FC<ProductProps> = ({
       }}
       viewport={{ amount: 0 }}
     >
-      <Card className="w-80 hover:scale-105 transition hover:shadow-lg">
+      <Card className="lg:w-80 hover:scale-105 transition hover:shadow-lg">
         <Link to={`/product/${id}`} className="">
           <CardHeader>
             <img
@@ -84,13 +84,17 @@ export const ProductCard: React.FC<ProductProps> = ({
             </span>
           </CardContent>
         </Link>
-        <CardFooter className="flex justify-between">
-          <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
-            ${price}
-          </h3>
-          <Button onClick={handleAddToCart}>
-            <LucideShoppingCart className="mr-2" /> Add to cart
-          </Button>
+        <CardFooter className="lg:flex justify-between">
+          <div>
+            <h3 className="text-xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+              ${price}
+            </h3>
+          </div>
+          <div>
+            <Button onClick={handleAddToCart}>
+              <LucideShoppingCart className="mr-2" /> Add to cart
+            </Button>
+          </div>
         </CardFooter>
       </Card>
     </motion.div>
