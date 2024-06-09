@@ -1,5 +1,3 @@
-import React from "react";
-
 interface SortDropdownProps {
   sortCriteria: string;
   handleSortChange: (value: string) => void;
