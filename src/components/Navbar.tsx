@@ -61,7 +61,9 @@ const Navbar: React.FC = () => {
                   <SheetTrigger asChild>
                     <Button>
                       <ShoppingCartIcon />
-                      <span className="ml-2">{cart.length}</span>
+                      <span className="ml-2">
+                        {cart.reduce((acc, item) => acc + item.quantity, 0)}
+                      </span>
                     </Button>
                   </SheetTrigger>
                   <SheetContent className="overflow-y-auto">
