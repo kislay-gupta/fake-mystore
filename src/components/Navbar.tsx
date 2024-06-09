@@ -1,7 +1,7 @@
-import { menuLink } from "@/constant";
-import { Search, ShoppingCartIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { menuLink, CartProductProps } from "@/constant";
+import { Search, ShoppingCartIcon } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
@@ -15,11 +15,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ProductProps } from "@/constant";
 
 const Navbar = () => {
   const [, setSearchParams] = useSearchParams();
-  const [cart, setCart] = useState<ProductProps[]>([]);
+  const [cart, setCart] = useState<CartProductProps[]>([]);
 
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
@@ -28,30 +27,38 @@ const Navbar = () => {
     }
   }, [cart]);
 
+  const handleQuantityChange = (productId: number, change: number) => {
+    const updatedCart = cart
+      .map((item) => {
+        if (item.id === productId) {
+          return { ...item, quantity: item.quantity + change };
+        }
+        return item;
+      })
+      .filter((item) => item.quantity > 0);
+
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
   return (
-    <nav className="sticky top-0 z-50  bg-white/30 dark:bg-black/30  backdrop-blur-lg ">
-      <div className="mx-4 my-auto  flex px-4">
-        <div className="grid h-24 w-full grid-cols-12 items-center ">
-          <div className="col-span-6  lg:col-span-2 ">
+    <nav className="sticky top-0 z-50 bg-white/30 dark:bg-black/30 backdrop-blur-lg">
+      <div className="mx-4 my-auto flex px-4">
+        <div className="grid h-24 w-full grid-cols-12 items-center">
+          <div className="col-span-6 lg:col-span-2">
             <Link to="/" className="">
-              <img
-                alt="facebook icon"
-                className=" lg:object-contain "
-                src="/logo.png"
-              />{" "}
+              <img alt="logo" className="lg:object-contain" src="/logo.png" />
             </Link>
           </div>
-          <div className="lg:col-span-4 mx-auto  hidden space-x-4 text-lg  dark:text-white md:block">
-            {menuLink.map((data, index) => {
-              return (
-                <Link key={index} to={data.route}>
-                  {data.label}
-                </Link>
-              );
-            })}
+          <div className="lg:col-span-4 mx-auto hidden space-x-4 text-lg dark:text-white md:block">
+            {menuLink.map((data, index) => (
+              <Link key={index} to={data.route}>
+                {data.label}
+              </Link>
+            ))}
           </div>
           <div className="col-span-6 relative hidden md:block">
-            <div className="flex justify-start gap-1 ">
+            <div className="flex justify-start gap-1">
               <div className="w-[512px] relative">
                 <Search className="absolute top-1/2 left-3 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
@@ -74,10 +81,12 @@ const Navbar = () => {
                   <SheetTrigger asChild>
                     <Button>
                       <ShoppingCartIcon />
-                      <span className="ml-2">{cart.length}</span>
+                      <span className="ml-2">
+                        {cart.reduce((acc, item) => acc + item.quantity, 0)}
+                      </span>
                     </Button>
                   </SheetTrigger>
-                  <SheetContent>
+                  <SheetContent className="overflow-y-auto">
                     <SheetHeader>
                       <SheetTitle>Shopping Cart</SheetTitle>
                       <SheetDescription>
@@ -101,8 +110,25 @@ const Navbar = () => {
                             <div className="col-span-3">
                               <h3 className="font-medium">{product.title}</h3>
                               <p className="text-sm text-gray-500">
-                                ${product.price}
+                                ${product.price} x {product.quantity}
                               </p>
+                              <div className="flex items-center">
+                                <Button
+                                  onClick={() =>
+                                    handleQuantityChange(product.id, -1)
+                                  }
+                                  className="mr-2"
+                                >
+                                  -
+                                </Button>
+                                <Button
+                                  onClick={() =>
+                                    handleQuantityChange(product.id, 1)
+                                  }
+                                >
+                                  +
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         ))

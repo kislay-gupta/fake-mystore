@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { ProductProps } from "@/constant";
+import { ProductProps, CartProductProps } from "@/constant";
 import { Button } from "../ui/button";
 import { LucideShoppingCart, Star } from "lucide-react";
 import { toast } from "sonner";
@@ -26,9 +26,15 @@ export const ProductCard = ({
     const product = { id, description, image, price, rating, title, category };
 
     const storedCart = localStorage.getItem("cart");
-    const cart: ProductProps[] = storedCart ? JSON.parse(storedCart) : [];
+    const cart: CartProductProps[] = storedCart ? JSON.parse(storedCart) : [];
 
-    cart.push(product);
+    const productIndex = cart.findIndex((item) => item.id === product.id);
+    if (productIndex > -1) {
+      cart[productIndex].quantity += 1;
+    } else {
+      const newProduct: CartProductProps = { ...product, quantity: 1 };
+      cart.push(newProduct);
+    }
 
     localStorage.setItem("cart", JSON.stringify(cart));
 
@@ -44,7 +50,6 @@ export const ProductCard = ({
             loading="lazy"
             className="h-24 w-full object-contain transition duration-500 group-hover:scale-105 sm:h-48"
           />
-
           <Link
             className="capitalize text-blue-500 hover:text-blue-800"
             to={`/category/${category}`}

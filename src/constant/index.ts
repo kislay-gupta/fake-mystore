@@ -1,4 +1,5 @@
 export interface ProductProps {
+  quantity: number;
   id: number;
   title: string;
   price: number;
@@ -10,7 +11,9 @@ export interface ProductProps {
     count: number;
   };
 }
-
+export interface CartProductProps extends ProductProps {
+  quantity: number;
+}
 export type MenuLink = {
   route: string;
   label: string;
