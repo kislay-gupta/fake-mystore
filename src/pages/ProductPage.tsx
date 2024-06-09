@@ -2,7 +2,7 @@ import ProductPageSkelton from "@/components/Loaders/ProductPageSkelton";
 import { Button } from "@/components/ui/button";
 import { ProductProps, url } from "@/constant";
 import axios from "axios";
-import { Heart } from "lucide-react";
+import { Heart, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
@@ -13,14 +13,24 @@ const ProductPage = () => {
   const [isLoading, setLoading] = useState(false);
   const { id } = useParams();
   const [isNotFavorite, setIsNotFavorite] = useState(true);
-
+  const [addingToCart, setAddingToCart] = useState(false);
   const handleIsFavorite = () => {
     setIsNotFavorite(!isNotFavorite);
-    setTimeout(() =>
-      toast.success(
-        isNotFavorite ? `Added to Favorite` : `Removed from Favorite `
-      )
+    toast.success(
+      isNotFavorite ? `Added to Favorite` : `Removed from Favorite`
     );
+  };
+
+  const handleAddToCart = () => {
+    setAddingToCart(true);
+    if (productDetail) {
+      const storedCart = localStorage.getItem("cart");
+      const cart: ProductProps[] = storedCart ? JSON.parse(storedCart) : [];
+      cart.push(productDetail);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      toast.success(`Product added to cart: ${productDetail.title}`);
+    }
+    setAddingToCart(false);
   };
 
   const getProductDetail = () => {
@@ -40,17 +50,15 @@ const ProductPage = () => {
 
   useEffect(() => {
     getProductDetail();
-  }, []);
-
-  console.log(productDetail);
+  }, [id]);
 
   return (
     <div>
       {isLoading && <ProductPageSkelton />}
       {!isLoading && productDetail && (
-        <div style={{ backgroundColor: "rgba(0, 0, 0, 0)" }}>
+        <div>
           <div
-            className="container px-5 py-24 mx-auto"
+            className="container px-5 py-10 mx-auto"
             style={{ cursor: "auto" }}
           >
             <div className="lg:w-4/5 mx-auto flex flex-wrap">
@@ -141,12 +149,22 @@ const ProductPage = () => {
                 </div>
                 <p className="leading-relaxed">{productDetail.description}</p>
 
-                <div className="flex">
-                  <span className="title-font font-medium text-2xl text-gray-900">
-                    $45.99
+                <div className="flex mt-4">
+                  <span className="my-auto title-font font-medium text-2xl text-gray-900">
+                    ${productDetail.price}
                   </span>
-                  <Button className=" ml-auto text-white bg-indigo-500 border-0  focus:outline-none hover:bg-indigo-600 rounded">
-                    Buy
+                  <Button
+                    disabled={addingToCart}
+                    onClick={handleAddToCart}
+                    className="ml-auto text-white bg-indigo-500 border-0 focus:outline-none hover:bg-indigo-600 rounded"
+                  >
+                    {addingToCart ? (
+                      <>
+                        <Loader2 className="animate-spin size-4 mr-2" /> Buying
+                      </>
+                    ) : (
+                      "Buy"
+                    )}
                   </Button>
                   <button
                     onClick={handleIsFavorite}

@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { ProductProps } from "@/constant";
 import { Button } from "../ui/button";
 import { LucideShoppingCart, Star } from "lucide-react";
+import { toast } from "sonner";
 
 export const ProductCard = ({
   id,
@@ -21,12 +22,26 @@ export const ProductCard = ({
   title,
   category,
 }: ProductProps) => {
+  const handleAddToCart = () => {
+    const product = { id, description, image, price, rating, title, category };
+
+    const storedCart = localStorage.getItem("cart");
+    const cart: ProductProps[] = storedCart ? JSON.parse(storedCart) : [];
+
+    cart.push(product);
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    toast.success(`Product added to cart: ${product.title}`);
+  };
+
   return (
     <Card className="w-80 hover:scale-105 transition hover:shadow-lg">
       <Link to={`/product/${id}`} className="">
         <CardHeader>
           <img
             src={image}
+            loading="lazy"
             className="h-24 w-full object-contain transition duration-500 group-hover:scale-105 sm:h-48"
           />
 
@@ -41,19 +56,19 @@ export const ProductCard = ({
             {description}
           </CardDescription>
         </CardHeader>
-        <CardContent className="  flex justify-between">
+        <CardContent className="flex justify-between">
           <span className="flex">
             <Star className="size-4 text-amber-500 fill-amber-500 my-auto" />{" "}
             {rating.rate}
           </span>
         </CardContent>
       </Link>
-      <CardFooter className="flex    justify-between">
+      <CardFooter className="flex justify-between">
         <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
           ${price}
         </h3>
-        <Button className="">
-          <LucideShoppingCart className="mr-2" /> Add to card
+        <Button onClick={handleAddToCart}>
+          <LucideShoppingCart className="mr-2" /> Add to cart
         </Button>
       </CardFooter>
     </Card>
