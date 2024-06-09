@@ -8,12 +8,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { ProductProps, CartProductProps } from "@/constant";
+import { ProductProps } from "@/constant";
 import { Button } from "../ui/button";
 import { LucideShoppingCart, Star } from "lucide-react";
 import { toast } from "sonner";
+import { useCart } from "@/contexts/CartContext";
 
-export const ProductCard = ({
+export const ProductCard: React.FC<ProductProps> = ({
   id,
   description,
   image,
@@ -21,23 +22,22 @@ export const ProductCard = ({
   rating,
   title,
   category,
-}: ProductProps) => {
+  quantity,
+}) => {
+  const { addToCart } = useCart();
+
   const handleAddToCart = () => {
-    const product = { id, description, image, price, rating, title, category };
-
-    const storedCart = localStorage.getItem("cart");
-    const cart: CartProductProps[] = storedCart ? JSON.parse(storedCart) : [];
-
-    const productIndex = cart.findIndex((item) => item.id === product.id);
-    if (productIndex > -1) {
-      cart[productIndex].quantity += 1;
-    } else {
-      const newProduct: CartProductProps = { ...product, quantity: 1 };
-      cart.push(newProduct);
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-
+    const product: ProductProps = {
+      id,
+      description,
+      image,
+      price,
+      rating,
+      title,
+      category,
+      quantity,
+    };
+    addToCart(product);
     toast.success(`Product added to cart: ${product.title}`);
   };
 

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { menuLink, CartProductProps } from "@/constant";
+import { menuLink } from "@/constant";
 import { Search, ShoppingCartIcon } from "lucide-react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -15,31 +15,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useCart } from "@/contexts/CartContext";
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   const [, setSearchParams] = useSearchParams();
-  const [cart, setCart] = useState<CartProductProps[]>([]);
-
-  useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      setCart(JSON.parse(storedCart));
-    }
-  }, [cart]);
-
-  const handleQuantityChange = (productId: number, change: number) => {
-    const updatedCart = cart
-      .map((item) => {
-        if (item.id === productId) {
-          return { ...item, quantity: item.quantity + change };
-        }
-        return item;
-      })
-      .filter((item) => item.quantity > 0);
-
-    setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-  };
+  const { cart, handleQuantityChange } = useCart();
 
   return (
     <nav className="sticky top-0 z-50 bg-white/30 dark:bg-black/30 backdrop-blur-lg">
@@ -81,9 +61,7 @@ const Navbar = () => {
                   <SheetTrigger asChild>
                     <Button>
                       <ShoppingCartIcon />
-                      <span className="ml-2">
-                        {cart.reduce((acc, item) => acc + item.quantity, 0)}
-                      </span>
+                      <span className="ml-2">{cart.length}</span>
                     </Button>
                   </SheetTrigger>
                   <SheetContent className="overflow-y-auto">
@@ -109,19 +87,22 @@ const Navbar = () => {
                             />
                             <div className="col-span-3">
                               <h3 className="font-medium">{product.title}</h3>
-                              <p className="text-sm text-gray-500">
-                                ${product.price} x {product.quantity}
+                              <p className="text-base text-gray-500">
+                                ${product.price} x {product.quantity} = $
+                                {product.quantity * product.price}
                               </p>
-                              <div className="flex items-center">
+                              <div className="flex gap-2 items-center">
                                 <Button
+                                  size="icon"
                                   onClick={() =>
                                     handleQuantityChange(product.id, -1)
                                   }
-                                  className="mr-2"
+                                  className=""
                                 >
                                   -
                                 </Button>
                                 <Button
+                                  size="icon"
                                   onClick={() =>
                                     handleQuantityChange(product.id, 1)
                                   }

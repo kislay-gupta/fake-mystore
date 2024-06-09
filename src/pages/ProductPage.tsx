@@ -1,6 +1,6 @@
 import ProductPageSkelton from "@/components/Loaders/ProductPageSkelton";
 import { Button } from "@/components/ui/button";
-import { ProductProps, url } from "@/constant";
+import { ProductProps, CartProductProps, url } from "@/constant";
 import axios from "axios";
 import { Heart, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -11,9 +11,10 @@ import { toast } from "sonner";
 const ProductPage = () => {
   const [productDetail, setProductDetail] = useState<ProductProps | null>(null);
   const [isLoading, setLoading] = useState(false);
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [isNotFavorite, setIsNotFavorite] = useState(true);
   const [addingToCart, setAddingToCart] = useState(false);
+
   const handleIsFavorite = () => {
     setIsNotFavorite(!isNotFavorite);
     toast.success(
@@ -22,15 +23,25 @@ const ProductPage = () => {
   };
 
   const handleAddToCart = () => {
-    setAddingToCart(true);
     if (productDetail) {
+      setAddingToCart(true);
       const storedCart = localStorage.getItem("cart");
-      const cart: ProductProps[] = storedCart ? JSON.parse(storedCart) : [];
-      cart.push(productDetail);
+      const cart: CartProductProps[] = storedCart ? JSON.parse(storedCart) : [];
+      const productIndex = cart.findIndex(
+        (item) => item.id === productDetail.id
+      );
+
+      if (productIndex > -1) {
+        cart[productIndex].quantity += 1;
+      } else {
+        const newProduct: CartProductProps = { ...productDetail, quantity: 1 };
+        cart.push(newProduct);
+      }
+
       localStorage.setItem("cart", JSON.stringify(cart));
-      toast.success(`Product added to cart`);
+      toast.success(`Product added to cart: ${productDetail.title}`);
+      setAddingToCart(false);
     }
-    setAddingToCart(false);
   };
 
   const getProductDetail = () => {
@@ -65,7 +76,7 @@ const ProductPage = () => {
               <img
                 alt="ecommerce"
                 className="lg:w-1/2 w-full lg:h-96 h-64 object-contain object-center rounded"
-                src={productDetail?.image}
+                src={productDetail.image}
                 style={{ cursor: "auto" }}
               />
               <div
@@ -103,9 +114,9 @@ const ProductPage = () => {
                     >
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
-                    {productDetail?.rating.rate}
+                    {productDetail.rating.rate}
                     <span className="text-gray-600 ml-3">
-                      {productDetail?.rating.count} Reviews
+                      {productDetail.rating.count} Reviews
                     </span>
                   </span>
                   <span className="flex ml-3 pl-3 py-2 border-l-2 border-gray-200 space-x-2s">
@@ -160,10 +171,10 @@ const ProductPage = () => {
                   >
                     {addingToCart ? (
                       <>
-                        <Loader2 className="animate-spin size-4 mr-2" /> Buying
+                        <Loader2 className="animate-spin size-4 mr-2" /> Adding
                       </>
                     ) : (
-                      "Buy"
+                      "Add to Cart"
                     )}
                   </Button>
                   <button
