@@ -11,6 +11,8 @@ interface CartContextType {
   cart: CartProductProps[];
   addToCart: (product: CartProductProps) => void;
   handleQuantityChange: (productId: number, change: number) => void;
+  removeFromCart: (productId: number) => void; // Add removeFromCart
+  clearCart: () => void; // Add clearCart
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -64,8 +66,29 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const removeFromCart = (productId: number) => {
+    setCart((prevCart) => {
+      const updatedCart = prevCart.filter((item) => item.id !== productId);
+      syncCartToLocalStorage(updatedCart);
+      return updatedCart;
+    });
+  };
+
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem("cart");
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, handleQuantityChange }}>
+    <CartContext.Provider
+      value={{
+        cart,
+        addToCart,
+        handleQuantityChange,
+        removeFromCart,
+        clearCart,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

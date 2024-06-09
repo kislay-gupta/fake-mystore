@@ -19,7 +19,7 @@ import { useCart } from "@/contexts/CartContext";
 
 const Navbar: React.FC = () => {
   const [, setSearchParams] = useSearchParams();
-  const { cart, handleQuantityChange } = useCart();
+  const { cart, handleQuantityChange, removeFromCart, clearCart } = useCart();
 
   return (
     <nav className="sticky top-0 z-50 bg-white/30 dark:bg-black/30 backdrop-blur-lg">
@@ -111,17 +111,27 @@ const Navbar: React.FC = () => {
                                 >
                                   +
                                 </Button>
+                                <Button
+                                  size="icon"
+                                  onClick={() => removeFromCart(product.id)}
+                                  className=""
+                                >
+                                  x
+                                </Button>
                               </div>
                             </div>
                           </div>
                         ))
                       )}
                     </div>
-                    <SheetFooter>
-                      <SheetClose asChild>
-                        <Button type="submit">Close</Button>
-                      </SheetClose>
-                    </SheetFooter>
+                    {cart.length > 0 && (
+                      <SheetFooter className="flex justify-between">
+                        <Button onClick={clearCart}>Clear Cart</Button>
+                        <SheetClose asChild>
+                          <Button type="submit">Close</Button>
+                        </SheetClose>
+                      </SheetFooter>
+                    )}
                   </SheetContent>
                 </Sheet>
               </div>
