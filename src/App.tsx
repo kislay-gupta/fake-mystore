@@ -9,7 +9,7 @@ import Category from "./pages/Category";
 function App() {
   return (
     <BrowserRouter>
-      <Toaster position="top-right" />
+      <Toaster expand={true} closeButton position="top-right" />
 
       <Navbar />
       <Routes>

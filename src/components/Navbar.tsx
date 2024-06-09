@@ -1,6 +1,6 @@
 import { menuLink } from "@/constant";
 import { Search, ShoppingCartIcon } from "lucide-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -15,9 +15,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { ProductProps } from "@/constant";
 
 const Navbar = () => {
   const [, setSearchParams] = useSearchParams();
+  const [cart, setCart] = useState<ProductProps[]>([]);
+
+  useEffect(() => {
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      setCart(JSON.parse(storedCart));
+    }
+  }, [cart]);
 
   return (
     <nav className="sticky top-0 z-50  bg-white/30 dark:bg-black/30  backdrop-blur-lg ">
@@ -40,14 +49,10 @@ const Navbar = () => {
                 </Link>
               );
             })}
-            {/* <a href="#">Service</a>
-            <a href="#">Contact</a>
-            <a href="#">Contact</a> */}
           </div>
-          <div className=" col-span-6 relative     hidden md:block">
-            {/* <ModeToggle /> */}
+          <div className="col-span-6 relative hidden md:block">
             <div className="flex justify-start gap-1 ">
-              <div className=" w-[512px] relative">
+              <div className="w-[512px] relative">
                 <Search className="absolute top-1/2 left-3 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Input
                   placeholder="Search product"
@@ -57,11 +62,10 @@ const Navbar = () => {
               </div>
               <div>
                 <Separator
-                  className="bg-black/50 h-auto "
+                  className="bg-black/50 h-auto"
                   orientation="vertical"
                 />
               </div>
-
               <div>
                 <Button>Log In</Button>
               </div>
@@ -70,36 +74,43 @@ const Navbar = () => {
                   <SheetTrigger asChild>
                     <Button>
                       <ShoppingCartIcon />
+                      <span className="ml-2">{cart.length}</span>
                     </Button>
                   </SheetTrigger>
                   <SheetContent>
                     <SheetHeader>
-                      <SheetTitle>Edit profile</SheetTitle>
+                      <SheetTitle>Shopping Cart</SheetTitle>
                       <SheetDescription>
-                        Make changes to your profile here. Click save when
-                        you're done.
+                        Here are the items in your cart.
                       </SheetDescription>
                     </SheetHeader>
                     <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        =
-                        <Input
-                          id="name"
-                          value="Pedro Duarte"
-                          className="col-span-3"
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Input
-                          id="username"
-                          value="@peduarte"
-                          className="col-span-3"
-                        />
-                      </div>
+                      {cart.length === 0 ? (
+                        <p>Your cart is empty</p>
+                      ) : (
+                        cart.map((product) => (
+                          <div
+                            key={product.id}
+                            className="grid grid-cols-4 gap-4 items-center"
+                          >
+                            <img
+                              src={product.image}
+                              alt={product.title}
+                              className="col-span-1 h-16 w-16 object-contain"
+                            />
+                            <div className="col-span-3">
+                              <h3 className="font-medium">{product.title}</h3>
+                              <p className="text-sm text-gray-500">
+                                ${product.price}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                     <SheetFooter>
                       <SheetClose asChild>
-                        <Button type="submit">Save changes</Button>
+                        <Button type="submit">Close</Button>
                       </SheetClose>
                     </SheetFooter>
                   </SheetContent>
@@ -109,8 +120,6 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
-      {/* <!-- End Navbar with Topbar--> */}
     </nav>
   );
 };

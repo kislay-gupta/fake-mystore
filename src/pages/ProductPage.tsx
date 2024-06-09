@@ -28,7 +28,7 @@ const ProductPage = () => {
       const cart: ProductProps[] = storedCart ? JSON.parse(storedCart) : [];
       cart.push(productDetail);
       localStorage.setItem("cart", JSON.stringify(cart));
-      toast.success(`Product added to cart: ${productDetail.title}`);
+      toast.success(`Product added to cart`);
     }
     setAddingToCart(false);
   };
